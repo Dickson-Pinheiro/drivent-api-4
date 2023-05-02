@@ -38,9 +38,35 @@ async function createBooking(roomId: number, userId: number) {
   return booking;
 }
 
+async function updateBooking(bookingId: number, roomId: number, userId: number) {
+  try {
+    const booking = await bookingRepository.getBookingById(bookingId);
+    if (!booking) {
+      throw notFoundError();
+    }
+    if (booking.userId !== userId) {
+      throw { name: 'forbbiden' };
+    }
+    const room = await roomRepository.getRoomById(roomId);
+    if (!room) {
+      throw notFoundError();
+    }
+
+    const bookingsWithRoomId = await bookingRepository.getBookingWithRoomId(roomId);
+
+    if (room.capacity < bookingsWithRoomId.length + 1) throw { name: 'forbbiden' };
+
+    const updatedBooking = await bookingRepository.updateBooking(bookingId, roomId);
+    return updatedBooking;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const bookingService = {
   getBooking,
   createBooking,
+  updateBooking,
 };
 
 export default bookingService;
