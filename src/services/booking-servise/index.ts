@@ -18,18 +18,23 @@ export async function getBooking(id: number) {
 
 async function createBooking(roomId: number, userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) {
+    throw notFoundError();
+  }
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
   const room = await roomRepository.getRoomById(roomId);
 
-  if (!room || !enrollment || !ticket) throw notFoundError();
+  if (!ticket) throw notFoundError();
 
   if (ticket.TicketType.isRemote || !ticket.TicketType.includesHotel || ticket.status === 'RESERVED') {
     throw { name: 'forbbiden' };
   }
+  if (!room) {
+    throw notFoundError();
+  }
+  if (room.capacity < room.Booking.length + 1) throw { name: 'forbbiden' };
 
-  if (room.capacity > room.Booking.length + 1) throw { name: 'forbbiden' };
-
-  const booking = bookingRepository.createBooking(userId, roomId);
+  const booking = await bookingRepository.createBooking(userId, roomId);
   return booking;
 }
 

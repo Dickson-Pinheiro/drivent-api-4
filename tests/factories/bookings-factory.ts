@@ -1,6 +1,7 @@
 import faker from '@faker-js/faker';
 import { User } from '@prisma/client';
 import { createHotel } from './hotels-factory';
+import { createUser } from './users-factory';
 import { prisma } from '@/config';
 
 export async function createRoom() {
@@ -23,4 +24,23 @@ export async function createBooking(user: Partial<User>) {
       userId: user.id,
     },
   });
+}
+
+export async function createReservedBooking() {
+  const room = await createRoom();
+  const user1 = await createUser();
+  const user2 = await createUser();
+  await prisma.booking.create({
+    data: {
+      roomId: room.id,
+      userId: user1.id,
+    },
+  });
+  await prisma.booking.create({
+    data: {
+      roomId: room.id,
+      userId: user2.id,
+    },
+  });
+  return room.id;
 }
