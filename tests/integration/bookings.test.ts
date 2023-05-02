@@ -247,7 +247,7 @@ describe('PUT booking/:bookingId', () => {
   });
 
   describe('when token is valid', () => {
-    it('should respond with status 404 when booking is not exists.', async () => {
+    it('should respond with status 404 when user not contain booking', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const ticketType = await createTicketTypeWithHotel();
@@ -258,7 +258,7 @@ describe('PUT booking/:bookingId', () => {
         roomId: 1,
       });
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
     it('should respond with status 404 when roomId is not exists.', async () => {
