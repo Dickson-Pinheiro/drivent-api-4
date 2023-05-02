@@ -41,10 +41,12 @@ async function createBooking(roomId: number, userId: number) {
 async function updateBooking(bookingId: number, roomId: number, userId: number) {
   try {
     const booking = await bookingRepository.getBookingById(bookingId);
+    const userBooking = await bookingRepository.getBookingWithUserId(userId);
+
     if (!booking) {
       throw notFoundError();
     }
-    if (booking.userId !== userId) {
+    if (booking.userId !== userId || !userBooking) {
       throw { name: 'forbbiden' };
     }
     const room = await roomRepository.getRoomById(roomId);
