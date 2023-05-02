@@ -16,7 +16,7 @@ import {
 } from '../factories';
 import app, { init } from '@/app';
 
-beforeEach(async () => {
+beforeAll(async () => {
   await init();
   await cleanDb();
 });
